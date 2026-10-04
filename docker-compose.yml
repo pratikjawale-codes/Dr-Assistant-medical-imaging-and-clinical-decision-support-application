@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  radassist-ai:
+    build: .
+    container_name: radassist_ai_platform
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data_store:/app/data_store
+    restart: unless-stopped
+    depends_on:
+      - orthanc-pacs
+
+  orthanc-pacs:
+    image: orthancteam/orthanc:latest
+    container_name: radassist_orthanc_pacs
+    ports:
+      - "4242:4242"   # DICOM protocol
+      - "8042:8042"   # DICOMweb REST API
+    environment:
+      - ORTHANC_NAME=RadAssist_PACS
+      - DICOM_WEB_PLUGIN_ENABLED=true
+    restart: unless-stopped
